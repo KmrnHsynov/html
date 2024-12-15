@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X NOLİK OYUNU</title>
+    <style>
+        body {
+            background-image: url(balatro.gif);
+            background-size: auto;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            text-align: center;
+            max-width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border-color: azure;
+        }
+
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid azure;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .cell.taken {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: azure
+        }
+    </style>
+</head>
+<body style="text-align: center;">
+    <h1 style="color: azure">İKS NOLİK OYUNU</h1>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+
+    <script style="color: azure">
+        const boardElement = document.getElementById('board');
+        const messageElement = document.getElementById('message');
+
+        let moves = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+
+        let currentPlayer = 'X';
+        let moveCount = 0;
+
+        function checkWinner() {
+            // Check rows, columns, and diagonals
+            for (let i = 0; i < 3; i++) {
+                if (moves[i][0] === currentPlayer && moves[i][1] === currentPlayer && moves[i][2] === currentPlayer) {
+                    return true;
+                }
+                if (moves[0][i] === currentPlayer && moves[1][i] === currentPlayer && moves[2][i] === currentPlayer) {
+                    return true;
+                }
+            }
+
+            if (moves[0][0] === currentPlayer && moves[1][1] === currentPlayer && moves[2][2] === currentPlayer) {
+                return true;
+            }
+
+            if (moves[0][2] === currentPlayer && moves[1][1] === currentPlayer && moves[2][0] === currentPlayer) {
+                return true;
+            }
+
+            return false;
+        }
+
+        function isBoardFull() {
+            return moveCount === 9;
+        }
+
+        function handleCellClick(event) {
+            const cell = event.target;
+            const row = cell.dataset.row;
+            const col = cell.dataset.col;
+
+            if (moves[row][col] !== 0) {
+                alert('Bu xana artıq doludur');
+                return;
+            }
+
+            moves[row][col] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add('taken');
+            moveCount++;
+
+            if (checkWinner()) {
+                messageElement.textContent = `${currentPlayer} qalib oldu!`;
+                boardElement.removeEventListener('click', handleCellClick);
+                return;
+            }
+
+            if (isBoardFull()) {
+                messageElement.textContent = 'Heç-heçə!';
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+
+        function createBoard() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    boardElement.appendChild(cell);
+                }
+            }
+
+            boardElement.addEventListener('click', handleCellClick);
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
